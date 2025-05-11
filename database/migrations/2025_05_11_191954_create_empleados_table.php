@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nombre') ;
             $table->string('apellido_paterno');
             $table->string('apellido_materno');
-            $table->integer('telefono');
+            $table->string('telefono', 25);
             $table->string('usuario');
             $table->string('contrasena');
             $table->boolean('administrador') -> default(false);

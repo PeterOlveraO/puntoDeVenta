@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-
+use App\Models\Empleado;
 class EmpleadoSeeder extends Seeder
 {
     /**
@@ -12,6 +12,6 @@ class EmpleadoSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Empleado::factory()->count(10)->create();
     }
 }

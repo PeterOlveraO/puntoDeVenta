@@ -17,7 +17,8 @@ class VentaFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'monto_total' => 0,
+            'metodo_pago' => $this->faker->randomElement(['Efectivo', 'Tarjeta', 'Transferencia'])
         ];
     }
 }
