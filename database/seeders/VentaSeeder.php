@@ -36,42 +36,44 @@ class VentaSeeder extends Seeder
             $totalVentaCalculado = 0;
 
             $productosParaAdjuntar = []; // Array para guardar los productos con sus datos pivote
-$totalVentaCalculado = 0;
 
-foreach ($productosDeEstaVenta as $producto) {
-    $cantidad = rand(1, 3); // O la cantidad que desees
-    $precioVentaDelProducto = $producto->precio_actual; // Usar el precio actual del producto para el seeder
+            foreach ($productosDeEstaVenta as $producto) {
+                $cantidad = rand(1, 3); // O la cantidad que desees
+                $precioVentaDelProducto = $producto->precio; // Cambiado de precio_actual a precio
 
-    // Aquí preparas los datos que irán en la tabla pivote 'producto_venta'
-    $productosParaAdjuntar[$producto->id] = [ // La clave es el ID del producto
-        'cantidad' => $cantidad,
-        'precio' => $precioVentaDelProducto,
-        // 'subtotal_linea' => $cantidad * $precioVentaDelProducto, // Si también tienes esta columna
-    ];
+                // Aquí preparas los datos que irán en la tabla pivote 'producto_venta'
+                $productosParaAdjuntar[$producto->id] = [ // La clave es el ID del producto
+                    'cantidad' => $cantidad,
+                    'precio' => $precioVentaDelProducto,
+                    // 'subtotal_linea' => $cantidad * $precioVentaDelProducto, // Si también tienes esta columna
+                ];
 
-    $totalVentaCalculado += $cantidad * $precioVentaDelProducto;
+                $totalVentaCalculado += $cantidad * $precioVentaDelProducto;
 
-    // Opcional: Lógica de stock si la estás simulando
-    // if ($producto->stock >= $cantidad) {
-    //     $producto->stock -= $cantidad;
-    //     $producto->save();
-    // } else {
-    //     // Manejar el caso de no tener stock para este producto en el seeder
-    //     // Quizás no lo añades a $productosParaAdjuntar
-    //     unset($productosParaAdjuntar[$producto->id]);
-    //     $totalVentaCalculado -= $cantidad * $precioVentaDelProducto; // Revertir el subtotal
-    //     $this->command->info("Stock insuficiente para {$producto->nombre} en el seeder, no se añadió a la venta {$venta->id}");
-    // }
-}
+                // Opcional: Lógica de stock si la estás simulando
+                // if ($producto->stock >= $cantidad) {
+                //     $producto->stock -= $cantidad;
+                //     $producto->save();
+                // } else {
+                //     // Manejar el caso de no tener stock para este producto en el seeder
+                //     // Quizás no lo añades a $productosParaAdjuntar
+                //     unset($productosParaAdjuntar[$producto->id]);
+                //     $totalVentaCalculado -= $cantidad * $precioVentaDelProducto; // Revertir el subtotal
+                //     $this->command->info("Stock insuficiente para {$producto->nombre} en el seeder, no se añadió a la venta {$venta->id}");
+                // }
+            }
 
-if (!empty($productosParaAdjuntar)) {
-    // ¡ESTA ES LA LÍNEA CLAVE PARA POBLAR LA TABLA PIVOTE!
-    $venta->productos()->attach($productosParaAdjuntar);
+            if (!empty($productosParaAdjuntar)) {
+                // ¡ESTA ES LA LÍNEA CLAVE PARA POBLAR LA TABLA PIVOTE!
+                $venta->productos()->attach($productosParaAdjuntar, [
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
 
-    // Actualizar el total_venta en el modelo Venta
-    $venta->total_venta = $totalVentaCalculado;
-    $venta->save();
-}
+                // Actualizar el monto_total en el modelo Venta
+                $venta->monto_total = $totalVentaCalculado;
+                $venta->save();
+            }
         }
     }
 }
