@@ -13,7 +13,8 @@ class VentaController extends Controller
      */
     public function index()
     {
-        //
+        $ventas = Venta::with(['empleado', 'productos'])->get();
+        return response()->json($ventas, 200);
     }
 
     /**
@@ -29,7 +30,42 @@ class VentaController extends Controller
      */
     public function store(StoreVentaRequest $request)
     {
-        //
+        $validated = $request->validated();
+        
+        // Calcular el monto total
+        $montoTotal = 0;
+        foreach ($validated['productos'] as $producto) {
+            $montoTotal += $producto['cantidad'] * $producto['precio'];
+        }
+
+        // Crear la venta
+        $venta = Venta::create([
+            'empleado_id' => $validated['empleado_id'],
+            'metodo_pago' => $validated['metodo_pago'],
+            'monto_total' => $montoTotal
+        ]);
+
+        // Preparar los productos para la tabla pivote
+        $productosParaAdjuntar = [];
+        foreach ($validated['productos'] as $producto) {
+            $productosParaAdjuntar[$producto['producto_id']] = [
+                'cantidad' => $producto['cantidad'],
+                'precio' => $producto['precio'],
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
+        }
+
+        // Adjuntar los productos a la venta
+        $venta->productos()->attach($productosParaAdjuntar);
+
+        // Cargar las relaciones para la respuesta
+        $venta->load(['empleado', 'productos']);
+
+        return response()->json([
+            'message' => 'Venta creada exitosamente',
+            'data' => $venta
+        ], 201);
     }
 
     /**
@@ -37,7 +73,11 @@ class VentaController extends Controller
      */
     public function show(Venta $venta)
     {
-        //
+        $venta->load(['empleado', 'productos']);
+        return response()->json([
+            'message' => 'Venta encontrada exitosamente',
+            'data' => $venta
+        ], 200);
     }
 
     /**
@@ -53,7 +93,14 @@ class VentaController extends Controller
      */
     public function update(UpdateVentaRequest $request, Venta $venta)
     {
-        //
+        $validatedData = $request->validated();
+        $venta->update($validatedData);
+
+        $venta->load(['empleado', 'productos']);
+        return response()->json([
+            'message' => 'Venta actualizada exitosamente',
+            'data' => $venta
+        ], 200);
     }
 
     /**

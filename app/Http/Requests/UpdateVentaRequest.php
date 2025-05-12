@@ -11,7 +11,7 @@ class UpdateVentaRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class UpdateVentaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'empleado_id' => 'sometimes|required|exists:empleados,id',
+            'metodo_pago' => 'sometimes|required|string|in:Efectivo,Tarjeta,Transferencia',
+            'monto_total' => 'sometimes|required|numeric|min:0'
         ];
     }
 }
