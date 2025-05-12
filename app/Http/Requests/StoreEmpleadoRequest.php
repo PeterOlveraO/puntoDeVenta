@@ -11,7 +11,7 @@ class StoreEmpleadoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,13 @@ class StoreEmpleadoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nombre' => 'required|string|max:255',
+            'apellido_paterno' => 'required|string|max:255',
+            'apellido_materno' => 'required|string|max:255',
+            'telefono' => 'required|string|max:255',
+            'usuario' => 'required|string|max:255',
+            'contrasena' => 'required|string|max:255',
+            'administrador' => 'required|boolean'
         ];
     }
 }

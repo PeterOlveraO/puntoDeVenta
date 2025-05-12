@@ -8,59 +8,41 @@ use App\Http\Requests\UpdateEmpleadoRequest;
 
 class EmpleadoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
-        //
+        $empleados = Empleado::all();
+        return response()->json($empleados, 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreEmpleadoRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $empleado = Empleado::create($validated);
+
+        return response()->json([
+            'message' => 'Empleado creado exitosamente',
+            'data' => $empleado
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Empleado $empleado)
     {
-        //
+        return response()->json([
+            'message' => 'Empleado encontrado exitosamente',
+            'data' => $empleado
+        ], 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Empleado $empleado)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateEmpleadoRequest $request, Empleado $empleado)
     {
-        //
+        $validatedData = $request->validated();
+        $empleado->update($validatedData);
+
+        return response()->json([
+            'message' => 'Empleado actualizado exitosamente',
+            'data' => $empleado
+        ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Empleado $empleado)
-    {
-        //
-    }
 }
